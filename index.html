@@ -61,8 +61,7 @@
 
             try {
                 const questApiUrl = `https://kifu.questgames.net/game/${kifuId}.json`;
-                const proxyUrl = `/proxy/${kifuId}`;
-                const response = await fetch(proxyUrl);
+                const response = await fetch(questApiUrl);
                 const data = await response.json();
                 alert(`API URL: ${questApiUrl}\n\nRaw Response:\n${JSON.stringify(data, null, 2)}`);
                 const sgf = convertToSgf(data);
