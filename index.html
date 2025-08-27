@@ -60,12 +60,11 @@
             }
 
             try {
-                const requestUrl = `/proxy/${kifuId}`;
-                const fullUrl = `${window.location.origin}${requestUrl}`;
-                const response = await fetch(requestUrl);
-                const data = await response.json();
                 const questApiUrl = `https://kifu.questgames.net/game/${kifuId}.json`;
-                alert(`Local Request URL: ${fullUrl}\nQuest API URL: ${questApiUrl}\n\nRaw Response:\n${JSON.stringify(data, null, 2)}`);
+                const proxyUrl = `/proxy/${kifuId}`;
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                alert(`API URL: ${questApiUrl}\n\nRaw Response:\n${JSON.stringify(data, null, 2)}`);
                 const sgf = convertToSgf(data);
                 document.getElementById('sgfOutput').value = sgf;
             } catch (error) {
