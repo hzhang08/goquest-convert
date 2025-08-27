@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quest to SGF Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input, button {
+            padding: 8px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #sgfOutput {
+            width: 100%;
+            min-height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quest to SGF Converter</h1>
+        <div>
+            <input type="text" id="kifuId" placeholder="Enter kifu ID (e.g., gdifx0qeq3z3)" style="width: 300px;">
+            <button onclick="fetchAndConvert()">Convert</button>
+        </div>
+        <div>
+            <textarea id="sgfOutput" readonly></textarea>
+            <button onclick="copySgf()">Copy SGF</button>
+        </div>
+    </div>
+
+    <script>
+        async function fetchAndConvert() {
+            const kifuId = document.getElementById('kifuId').value.trim();
+            if (!kifuId) {
+                alert('Please enter a kifu ID');
+                return;
+            }
+
+            try {
+                const requestUrl = `/proxy/${kifuId}`;
+                const fullUrl = `${window.location.origin}${requestUrl}`;
+                const response = await fetch(requestUrl);
+                const data = await response.json();
+                const questApiUrl = `https://kifu.questgames.net/game/${kifuId}.json`;
+                alert(`Local Request URL: ${fullUrl}\nQuest API URL: ${questApiUrl}\n\nRaw Response:\n${JSON.stringify(data, null, 2)}`);
+                const sgf = convertToSgf(data);
+                document.getElementById('sgfOutput').value = sgf;
+            } catch (error) {
+                alert('Error fetching or converting the kifu');
+                console.error(error);
+            }
+        }
+
+        function convertToSgf(data) {
+            const moves = data.position.moves;
+            const size = data.position.size;
+            
+            let sgf = `(;FF[4]GM[1]SZ[${size}]`;
+            
+            for (const move of moves) {
+                sgf += ';' + move.m;
+            }
+            
+            sgf += ')';
+            return sgf;
+        }
+
+        function copySgf() {
+            const sgfText = document.getElementById('sgfOutput');
+            sgfText.select();
+            document.execCommand('copy');
+            alert('SGF copied to clipboard!');
+        }
+    </script>
+</body>
+</html>
